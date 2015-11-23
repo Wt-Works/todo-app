@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/todo-app.wt.dir/main.C.o CMakeFiles/todo-app.wt.dir/ToDoApp.C.o CMakeFiles/todo-app.wt.dir/UserAccount.C.o CMakeFiles/todo-app.wt.dir/Login.C.o CMakeFiles/todo-app.wt.dir/TodoWidget.C.o  -o todo-app.wt -rdynamic -lboost_system -lboost_thread -lboost_signals -lwt -lwthttp -lwtdbo -lwtdbosqlite3 
