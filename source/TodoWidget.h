@@ -6,15 +6,16 @@
 #include <Wt/WPushButton>
 #include <Wt/WLineEdit>
 
-namespace dbo = Wt::Dbo;
-
 class TodoWidget : public Wt::WContainerWidget
 {
 public:
-  TodoWidget();
-  TodoWidget(Wt::WContainerWidget *parent, dbo::ptr<UserAccount> user);
+  // TodoWidget();
+  TodoWidget(Wt::WContainerWidget *parent,
+    dbo::ptr<UserAccount> user);
+  void clickTodo();
 
 private:
+  Wt::Signal<Wt::WString> todoAdded_;
   Wt::WText *title_;
   Wt::WPushButton *addTodoButton_;
   Wt::WLineEdit *todoTitle_;

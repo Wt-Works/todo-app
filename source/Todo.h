@@ -4,6 +4,7 @@
 #include <Wt/Dbo/WtSqlTraits>
 
 class UserAccount;
+// #include "UserAccount.h"
 
 namespace dbo = Wt::Dbo;
 

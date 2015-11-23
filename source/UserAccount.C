@@ -12,10 +12,12 @@ using namespace Wt::Dbo;
 UserAccount::UserAccount()
 { }
 
-UserAccount::UserAccount(const WString &aName) : name(aName)
+UserAccount::UserAccount(const WString &aName)
+  : name(aName)
 { }
 
-ptr<UserAccount> UserAccount::login(Session &session, const WString &userName)
+ptr<UserAccount> UserAccount::login(Session& session,
+				    const WString& userName)
 {
   Transaction transaction(session);
 

@@ -9,13 +9,16 @@
 
 #include "Todo.h"
 #include "Login.h"
-#include "UserAccount.h"
 #include "TodoWidget.h"
+// #include "UserAccount.h"
+class UserAccount;
+
 
 using namespace Wt;
 
 ToDoApp::ToDoApp(const WEnvironment &env)
-  : WApplication(env), sqlite3_(Wt::WApplication::appRoot() + "todo.db")
+  : WApplication(env),
+  sqlite3_(Wt::WApplication::appRoot() + "todo.db")
 {
   session.setConnection(sqlite3_);
   sqlite3_.setProperty("show-queries", "true");
