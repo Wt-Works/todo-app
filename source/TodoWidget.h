@@ -19,5 +19,6 @@ private:
   Wt::WText *title_;
   Wt::WPushButton *addTodoButton_;
   Wt::WLineEdit *todoTitle_;
+  Wt::WText *output_;
   dbo::ptr<UserAccount> user_;
 };

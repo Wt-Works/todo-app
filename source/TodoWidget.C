@@ -2,9 +2,12 @@
 #include "Todo.h"
 #include "ToDoApp.h"
 
+#include <Wt/WApplication>
+#include <Wt/WLogger>
 #include <Wt/Dbo/WtSqlTraits>
 
 using namespace Wt;
+namespace dbo = Wt::Dbo;
 
 TodoWidget::TodoWidget(WContainerWidget *parent,
     dbo::ptr<UserAccount> user)
@@ -22,12 +25,12 @@ TodoWidget::TodoWidget(WContainerWidget *parent,
 
 void TodoWidget::clickTodo()
 {
-  // Session& session = ToDoApp::ToDoApp()->session;
-  // Transaction transaction(session);
-  //
-  // ptr<Todo> todo =
-  //   ToDoApp::ToDoApp()->session.add(new Todo());
-  // todo.modify()->title = todoTitle_->text().toUTF8();
-  //
-  // transaction.commit();
+  dbo::Session &session = ToDoApp::toDoApp()->session;
+  dbo::Transaction transaction(session);
+
+  WApplication::instance()->log("notice") << "Creating todo: " << todoTitle_->text().toUTF8();
+  dbo::ptr<Todo> todo = session.add(new Todo());
+  todo.modify()->title = todoTitle_->text().toUTF8();
+
+  transaction.commit();
 }
