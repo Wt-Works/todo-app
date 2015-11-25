@@ -6,9 +6,17 @@
   <message id="login.loginButton">
     Login
   </message>
+  
   <message id="todo.add">
     Add todo
   </message>
+  <message id="todo.num">
+    #
+  </message>
+  <message id="todo.title">
+    title
+  </message>
+
   <message id="fatalerror.title">
     Fatal error
   </message>
