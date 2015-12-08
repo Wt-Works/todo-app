@@ -6,7 +6,7 @@ cmake ..
 make
 cd ..
 cd source
-cp todo.* ~/develop/cpp/todo-app/build/source/
+cp todo.* ../build/source/
 cd ..
 cd build
 cd source
