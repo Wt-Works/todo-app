@@ -6,7 +6,7 @@
   <message id="login.loginButton">
     Login
   </message>
-  
+
   <message id="todo.add">
     Add todo
   </message>
@@ -15,6 +15,9 @@
   </message>
   <message id="todo.title">
     title
+  </message>
+  <message id="todo.deadline">
+    deadline
   </message>
 
   <message id="fatalerror.title">

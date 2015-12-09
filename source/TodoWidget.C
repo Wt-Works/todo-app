@@ -2,9 +2,14 @@
 #include "Todo.h"
 #include "ToDoApp.h"
 
+#include <Wt/WCalendar>
+#include <Wt/WDate>
+#include <Wt/WDateEdit>
+
 #include <Wt/WApplication>
 #include <Wt/WLogger>
 #include <Wt/Dbo/WtSqlTraits>
+#include <functional>
 
 using namespace Wt;
 namespace dbo = Wt::Dbo;
@@ -30,6 +35,7 @@ void TodoWidget::drawTable()
   todoTable_->setHeaderCount(1);
   todoTable_->elementAt(0, 0)->addWidget(new Wt::WText(tr("todo.num")));
   todoTable_->elementAt(0, 1)->addWidget(new Wt::WText(tr("todo.title")));
+  todoTable_->elementAt(0, 2)->addWidget(new Wt::WText(tr("todo.deadline")));
 
   dbo::Session &session = ToDoApp::toDoApp()->session;
   dbo::Transaction transaction(session);
@@ -37,12 +43,21 @@ void TodoWidget::drawTable()
   typedef dbo::collection< dbo::ptr<Todo> > MyTodos;
   MyTodos todos = session.find<Todo>("where user_id = ?").bind(user_.id());
 
+  Wt::WDateEdit **datePickers = new Wt::WDateEdit*[todos.size()];
+
   int row = 1;
 
   for (MyTodos::const_iterator i = todos.begin(); i != todos.end(); ++i)
   {
+    dbo::ptr<Todo> todo = *i;
     todoTable_->elementAt(row, 0)->addWidget(new Wt::WText(Wt::WString::fromUTF8("{1}").arg(row)));
     todoTable_->elementAt(row, 1)->addWidget(new Wt::WText((*i)->title.toUTF8()));
+    datePickers[row-1] = new Wt::WDateEdit();
+    todoTable_->elementAt(row, 2)->addWidget(datePickers[row-1]);
+    datePickers[row-1]->setDate(todo->deadline);
+    datePickers[row-1]->changed().connect(std::bind([=] () {
+      todo.modify()->deadline = datePickers[row-1]->date();
+    }));
 
     row++;
   }

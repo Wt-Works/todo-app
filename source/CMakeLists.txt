@@ -6,6 +6,10 @@ Login.C
 TodoWidget.C
 )
 
+if(UNIX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
+endif()
+
 SET(WT_PROJECT_TARGET todo-app.wt)
 
 FIND_PACKAGE(Boost COMPONENTS system thread signals)

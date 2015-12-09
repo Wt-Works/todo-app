@@ -1,4 +1,4 @@
-#include <Wt/WDateTime>
+#include <Wt/WDate>
 
 #include <Wt/Dbo/Dbo>
 #include <Wt/Dbo/WtSqlTraits>
@@ -13,7 +13,7 @@ class Todo
 public:
   dbo::ptr<UserAccount> user;
 
-  Wt::WDateTime deadline;
+  Wt::WDate deadline;
   Wt::WString title;
   Wt::WString description;
 
