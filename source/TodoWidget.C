@@ -5,6 +5,7 @@
 #include <Wt/WCalendar>
 #include <Wt/WDate>
 #include <Wt/WDateEdit>
+#include <Wt/WCheckBox>
 
 #include <Wt/WApplication>
 #include <Wt/WLogger>
@@ -36,6 +37,7 @@ void TodoWidget::drawTable()
   todoTable_->elementAt(0, 0)->addWidget(new Wt::WText(tr("todo.num")));
   todoTable_->elementAt(0, 1)->addWidget(new Wt::WText(tr("todo.title")));
   todoTable_->elementAt(0, 2)->addWidget(new Wt::WText(tr("todo.deadline")));
+  todoTable_->elementAt(0, 3)->addWidget(new Wt::WText(tr("todo.done")));
 
   dbo::Session &session = ToDoApp::toDoApp()->session;
   dbo::Transaction transaction(session);
@@ -44,6 +46,7 @@ void TodoWidget::drawTable()
   MyTodos todos = session.find<Todo>("where user_id = ?").bind(user_.id());
 
   Wt::WDateEdit **datePickers = new Wt::WDateEdit*[todos.size()];
+  Wt::WCheckBox **checkBoxes = new Wt::WCheckBox*[todos.size()];
 
   int row = 1;
 
@@ -52,15 +55,31 @@ void TodoWidget::drawTable()
     dbo::ptr<Todo> todo = *i;
     todoTable_->elementAt(row, 0)->addWidget(new Wt::WText(Wt::WString::fromUTF8("{1}").arg(row)));
     todoTable_->elementAt(row, 1)->addWidget(new Wt::WText((*i)->title.toUTF8()));
+
     datePickers[row-1] = new Wt::WDateEdit();
     todoTable_->elementAt(row, 2)->addWidget(datePickers[row-1]);
     datePickers[row-1]->setDate(todo->deadline);
     datePickers[row-1]->setBottom(Wt::WDate::currentServerDate());
+
     datePickers[row-1]->changed().connect(std::bind([=] () {
       dbo::Session &session = ToDoApp::toDoApp()->session;
       dbo::Transaction transaction(session);
       if(datePickers[row-1]->validate() == Wt::WValidator::Valid)
         todo.modify()->deadline = datePickers[row-1]->date();
+      transaction.commit();
+    }));
+    checkBoxes[row-1] = new Wt::WCheckBox();
+    todoTable_->elementAt(row, 3)->addWidget(checkBoxes[row-1]);
+    Wt::CheckState isDone;
+    if(todo->done == 0)
+      isDone = Wt::Unchecked;
+    else
+      isDone = Wt::Checked;
+    checkBoxes[row-1]->setCheckState((isDone));
+    checkBoxes[row-1]->changed().connect(std::bind([=] () {
+      dbo::Session &session = ToDoApp::toDoApp()->session;
+      dbo::Transaction transaction(session);
+      todo.modify()->done = checkBoxes[row-1]->checkState();
       transaction.commit();
     }));
     row++;

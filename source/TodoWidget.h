@@ -23,5 +23,6 @@ private:
   Wt::WLineEdit *todoTitle_;
   Wt::WText *output_;
   Wt::WTable *todoTable_;
+  Wt::WTable *doneTable_;
   dbo::ptr<UserAccount> user_;
 };

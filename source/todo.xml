@@ -14,10 +14,13 @@
     #
   </message>
   <message id="todo.title">
-    title
+    Title
   </message>
   <message id="todo.deadline">
-    deadline
+    Deadline
+  </message>
+  <message id="todo.done">
+    Done
   </message>
 
   <message id="fatalerror.title">

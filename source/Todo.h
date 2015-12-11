@@ -16,6 +16,7 @@ public:
   Wt::WDate deadline;
   Wt::WString title;
   Wt::WString description;
+  bool done;
 
   template<class Action>
   void persist(Action &a)
@@ -25,5 +26,6 @@ public:
     dbo::field(a, deadline, "deadline");
     dbo::field(a, title, "title");
     dbo::field(a, description, "description");
+    dbo::field(a, done, "done");
   }
 };
