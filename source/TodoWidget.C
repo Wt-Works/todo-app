@@ -55,10 +55,14 @@ void TodoWidget::drawTable()
     datePickers[row-1] = new Wt::WDateEdit();
     todoTable_->elementAt(row, 2)->addWidget(datePickers[row-1]);
     datePickers[row-1]->setDate(todo->deadline);
+    datePickers[row-1]->setBottom(Wt::WDate::currentServerDate());
     datePickers[row-1]->changed().connect(std::bind([=] () {
-      todo.modify()->deadline = datePickers[row-1]->date();
+      dbo::Session &session = ToDoApp::toDoApp()->session;
+      dbo::Transaction transaction(session);
+      if(datePickers[row-1]->validate() == Wt::WValidator::Valid)
+        todo.modify()->deadline = datePickers[row-1]->date();
+      transaction.commit();
     }));
-
     row++;
   }
 
