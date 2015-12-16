@@ -22,15 +22,24 @@ TodoWidget::TodoWidget(WContainerWidget *parent,
 {
   setStyleClass("todo");
 
-  title_ = new WText("Hello " + user_->name, this);
+  title_ = new WText("Hello " + user_->name + "<br/>", this);
   todoTitle_ = new WLineEdit(this);
   todoTitle_->setFocus();
   addTodoButton_ = new WPushButton(tr("todo.add"), this);
   addTodoButton_->clicked().connect(this, &TodoWidget::clickTodo);
+  sortBoxText_ = new WText("<br/>Sort by ", this);
+  sortCBox_ = new WComboBox(this);
+  sortCBox_->addItem("deadline");
+  sortCBox_->addItem("title");
+  sortCBox_->addItem("done");
+  sortCBox_->changed().connect(std::bind([=] () {
+    todoTable_->clear();
+    TodoWidget::drawTable(sortCBox_->currentText().narrow());
+  }));
   TodoWidget::drawTable();
 }
 
-void TodoWidget::drawTable()
+void TodoWidget::drawTable(std::string sortBy)
 {
   todoTable_ = new WTable(this);
   todoTable_->setHeaderCount(1);
@@ -43,7 +52,10 @@ void TodoWidget::drawTable()
   dbo::Transaction transaction(session);
 
   typedef dbo::collection< dbo::ptr<Todo> > MyTodos;
-  MyTodos todos = session.find<Todo>("where user_id = ?").bind(user_.id());
+  dbo::Query< dbo::ptr<Todo> > query = session.find<Todo>();
+  query.where("user_id = ?").bind(user_.id());
+  query.orderBy(sortBy);
+  MyTodos todos = query.resultList();
 
   Wt::WDateEdit **datePickers = new Wt::WDateEdit*[todos.size()];
   Wt::WCheckBox **checkBoxes = new Wt::WCheckBox*[todos.size()];

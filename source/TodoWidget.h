@@ -6,6 +6,7 @@
 #include <Wt/WPushButton>
 #include <Wt/WLineEdit>
 #include <Wt/WTable>
+#include <Wt/WComboBox>
 
 class TodoWidget : public Wt::WContainerWidget
 {
@@ -14,15 +15,17 @@ public:
   TodoWidget(Wt::WContainerWidget *parent,
     dbo::ptr<UserAccount> user);
   void clickTodo();
-  void drawTable();
+  void drawTable(std::string sortBy = "deadline");
 
 private:
   Wt::Signal<Wt::WString> todoAdded_;
   Wt::WText *title_;
+  Wt::WText *sortBoxText_;
   Wt::WPushButton *addTodoButton_;
   Wt::WLineEdit *todoTitle_;
   Wt::WText *output_;
   Wt::WTable *todoTable_;
   Wt::WTable *doneTable_;
+  Wt::WComboBox *sortCBox_;
   dbo::ptr<UserAccount> user_;
 };
