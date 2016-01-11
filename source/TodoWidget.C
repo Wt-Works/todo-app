@@ -1,6 +1,7 @@
 #include "TodoWidget.h"
 #include "Todo.h"
 #include "ToDoApp.h"
+#include "Mailing.h"
 
 #include <Wt/WCalendar>
 #include <Wt/WDate>
@@ -102,6 +103,8 @@ void TodoWidget::drawTable(std::string sortBy)
 
 void TodoWidget::clickTodo()
 {
+  new Mailing();
+
   dbo::Session &session = ToDoApp::toDoApp()->session;
   dbo::Transaction transaction(session);
 

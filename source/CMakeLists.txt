@@ -1,5 +1,6 @@
 SET(WT_PROJECT_SOURCE
 main.C
+Mailing.C
 ToDoApp.C
 UserAccount.C
 Login.C
