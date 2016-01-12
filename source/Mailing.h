@@ -5,7 +5,7 @@ class Mailing
 {
 public:
   Mailing();
-  // void sendMail();
+  void sendMail(std::string email, Wt::WString todoTitle);
 
 private:
   Wt::Mail::Message message;

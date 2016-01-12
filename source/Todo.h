@@ -17,6 +17,7 @@ public:
   Wt::WString title;
   Wt::WString description;
   bool done;
+  bool sendNotification;
 
   template<class Action>
   void persist(Action &a)
@@ -27,5 +28,6 @@ public:
     dbo::field(a, title, "title");
     dbo::field(a, description, "description");
     dbo::field(a, done, "done");
+    dbo::field(a, sendNotification, "sendNotification");
   }
 };

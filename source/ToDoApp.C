@@ -4,6 +4,9 @@
 #include <Wt/WLogger>
 #include <Wt/WPushButton>
 #include <Wt/WText>
+#include <Wt/WApplication>
+#include <Wt/WEnvironment>
+#include <Wt/WBootstrapTheme>
 
 #include "ToDoApp.h"
 
@@ -20,6 +23,8 @@ ToDoApp::ToDoApp(const WEnvironment &env)
   : WApplication(env),
   sqlite3_(Wt::WApplication::appRoot() + "todo.db")
 {
+  setTheme(new WBootstrapTheme());
+
   session.setConnection(sqlite3_);
   sqlite3_.setProperty("show-queries", "true");
 

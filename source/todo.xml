@@ -22,6 +22,12 @@
   <message id="todo.done">
     Done
   </message>
+  <message id="todo.save_mail">
+    Save e-mail
+  </message>
+  <message id="todo.notification">
+    Notification
+  </message>
 
   <message id="fatalerror.title">
     Fatal error

@@ -12,6 +12,7 @@ class UserAccount
 {
 public:
   Wt::WString name;
+  Wt::WString mail;
   dbo::collection< dbo::ptr<Todo> > entries;
 
   UserAccount();
@@ -22,6 +23,7 @@ public:
   void persist(Action &a)
   {
     dbo::field(a, name, "name");
+    dbo::field(a, mail, "mail");
     dbo::hasMany(a, entries, dbo::ManyToOne, "user");
   }
 };

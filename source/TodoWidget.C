@@ -28,6 +28,17 @@ TodoWidget::TodoWidget(WContainerWidget *parent,
   todoTitle_->setFocus();
   addTodoButton_ = new WPushButton(tr("todo.add"), this);
   addTodoButton_->clicked().connect(this, &TodoWidget::clickTodo);
+  mailLineEdit_ = new WLineEdit(this);
+
+  dbo::Session &session = ToDoApp::toDoApp()->session;
+  dbo::Transaction transaction(session);
+
+  mailLineEdit_->setText(user_->mail.toUTF8());
+
+  transaction.commit();
+
+  saveMailButton_ = new WPushButton(tr("todo.save_mail"), this);
+  saveMailButton_->clicked().connect(this, &TodoWidget::saveMail);
   sortBoxText_ = new WText("<br/>Sort by ", this);
   sortCBox_ = new WComboBox(this);
   sortCBox_->addItem("deadline");
@@ -48,6 +59,7 @@ void TodoWidget::drawTable(std::string sortBy)
   todoTable_->elementAt(0, 1)->addWidget(new Wt::WText(tr("todo.title")));
   todoTable_->elementAt(0, 2)->addWidget(new Wt::WText(tr("todo.deadline")));
   todoTable_->elementAt(0, 3)->addWidget(new Wt::WText(tr("todo.done")));
+  todoTable_->elementAt(0, 4)->addWidget(new Wt::WText(tr("todo.notification")));
 
   dbo::Session &session = ToDoApp::toDoApp()->session;
   dbo::Transaction transaction(session);
@@ -59,7 +71,8 @@ void TodoWidget::drawTable(std::string sortBy)
   MyTodos todos = query.resultList();
 
   Wt::WDateEdit **datePickers = new Wt::WDateEdit*[todos.size()];
-  Wt::WCheckBox **checkBoxes = new Wt::WCheckBox*[todos.size()];
+  Wt::WCheckBox **doneCheckBox = new Wt::WCheckBox*[todos.size()];
+  Wt::WCheckBox **notificationCheckBox = new Wt::WCheckBox*[todos.size()];
 
   int row = 1;
 
@@ -80,21 +93,43 @@ void TodoWidget::drawTable(std::string sortBy)
       if(datePickers[row-1]->validate() == Wt::WValidator::Valid)
         todo.modify()->deadline = datePickers[row-1]->date();
       transaction.commit();
+
     }));
-    checkBoxes[row-1] = new Wt::WCheckBox();
-    todoTable_->elementAt(row, 3)->addWidget(checkBoxes[row-1]);
+    doneCheckBox[row-1] = new Wt::WCheckBox();
+    todoTable_->elementAt(row, 3)->addWidget(doneCheckBox[row-1]);
     Wt::CheckState isDone;
     if(todo->done == 0)
       isDone = Wt::Unchecked;
     else
       isDone = Wt::Checked;
-    checkBoxes[row-1]->setCheckState((isDone));
-    checkBoxes[row-1]->changed().connect(std::bind([=] () {
+    doneCheckBox[row-1]->setCheckState((isDone));
+    doneCheckBox[row-1]->changed().connect(std::bind([=] () {
       dbo::Session &session = ToDoApp::toDoApp()->session;
       dbo::Transaction transaction(session);
-      todo.modify()->done = checkBoxes[row-1]->checkState();
+      todo.modify()->done = doneCheckBox[row-1]->checkState();
       transaction.commit();
     }));
+
+    notificationCheckBox[row-1] = new Wt::WCheckBox();
+    todoTable_->elementAt(row, 4)->addWidget(notificationCheckBox[row-1]);
+    Wt::CheckState send;
+    if(todo->sendNotification == 0)
+      send = Wt::Unchecked;
+    else
+    {
+      send = Wt::Checked;
+      notificationCheckBox[row-1]->setEnabled(false);
+    }
+    notificationCheckBox[row-1]->setCheckState(send);
+    notificationCheckBox[row-1]->changed().connect(std::bind([=] () {
+      dbo::Session &session = ToDoApp::toDoApp()->session;
+      dbo::Transaction transaction(session);
+      todo.modify()->sendNotification = notificationCheckBox[row-1]->checkState();
+      transaction.commit();
+      notificationCheckBox[row-1]->setEnabled(false);
+    }));
+    notificationCheckBox[row-1]->checked().connect(boost::bind(&TodoWidget::sendNotification, this, user_->mail.toUTF8(), todo->title));
+
     row++;
   }
 
@@ -103,8 +138,6 @@ void TodoWidget::drawTable(std::string sortBy)
 
 void TodoWidget::clickTodo()
 {
-  new Mailing();
-
   dbo::Session &session = ToDoApp::toDoApp()->session;
   dbo::Transaction transaction(session);
 
@@ -117,4 +150,20 @@ void TodoWidget::clickTodo()
 
   todoTable_->clear();
   TodoWidget::drawTable();
+}
+
+void TodoWidget::saveMail()
+{
+  dbo::Session &session = ToDoApp::toDoApp()->session;
+  dbo::Transaction transaction(session);
+
+  user_.modify()->mail = mailLineEdit_->text().toUTF8();
+
+  transaction.commit();
+}
+
+void TodoWidget::sendNotification(std::string email, Wt::WString todoTitle)
+{
+  Mailing *mailing = new Mailing();
+  mailing->sendMail(email, todoTitle);
 }

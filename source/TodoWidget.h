@@ -15,7 +15,9 @@ public:
   TodoWidget(Wt::WContainerWidget *parent,
     dbo::ptr<UserAccount> user);
   void clickTodo();
+  void saveMail();
   void drawTable(std::string sortBy = "deadline");
+  void sendNotification(std::string email, Wt::WString todoTitle);
 
 private:
   Wt::Signal<Wt::WString> todoAdded_;
@@ -23,6 +25,8 @@ private:
   Wt::WText *sortBoxText_;
   Wt::WPushButton *addTodoButton_;
   Wt::WLineEdit *todoTitle_;
+  Wt::WPushButton *saveMailButton_;
+  Wt::WLineEdit *mailLineEdit_;
   Wt::WText *output_;
   Wt::WTable *todoTable_;
   Wt::WTable *doneTable_;
