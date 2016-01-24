@@ -43,7 +43,7 @@ ToDoApp::ToDoApp(const WEnvironment &env)
 
   messageResourceBundle().use(appRoot() + "todo");
 
-  useStyleSheet("todo.css");
+  useStyleSheet("./todo.css");
 
   Login *login = new Login(root());
   login->loggedIn().connect(this, &ToDoApp::login);

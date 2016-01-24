@@ -7,6 +7,7 @@
 #include <Wt/WLineEdit>
 #include <Wt/WTable>
 #include <Wt/WComboBox>
+#include <Wt/WSuggestionPopup>
 
 class TodoWidget : public Wt::WContainerWidget
 {
@@ -25,8 +26,10 @@ private:
   Wt::WText *sortBoxText_;
   Wt::WPushButton *addTodoButton_;
   Wt::WLineEdit *todoTitle_;
+  Wt::WSuggestionPopup *todoSuggestion_;
   Wt::WPushButton *saveMailButton_;
   Wt::WLineEdit *mailLineEdit_;
+  Wt::WText *mailInfo_;
   Wt::WText *output_;
   Wt::WTable *todoTable_;
   Wt::WTable *doneTable_;

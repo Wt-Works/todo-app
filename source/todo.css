@@ -15,3 +15,7 @@
 	font-weight: bold;
 	padding-right: 5px;
 }
+
+.active {
+    background-color: #F00;
+}

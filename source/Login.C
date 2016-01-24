@@ -1,6 +1,7 @@
 #include "Login.h"
 
 #include <Wt/WLabel>
+#include <functional>
 
 using namespace Wt;
 
@@ -13,9 +14,14 @@ Login::Login(WContainerWidget* parent) : WContainerWidget(parent), loggedIn_(thi
   userNameEdit_->setFocus();
   userNameL->setBuddy(userNameEdit_);
 
-  userNameEdit_->enterPressed().connect(this, &Login::login);
-
   loginButton_ = new WPushButton(tr("login.loginButton"), this);
+  loginButton_->setEnabled(false);
+  userNameEdit_->textInput().connect(std::bind([=] () {
+    if(userNameEdit_->text() == "")
+      loginButton_->setEnabled(false);
+    else
+      loginButton_->setEnabled(true);
+  }));
   loginButton_->clicked().connect(this, &Login::login);
 }
 

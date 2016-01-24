@@ -7,6 +7,8 @@
 #include <Wt/WDate>
 #include <Wt/WDateEdit>
 #include <Wt/WCheckBox>
+#include <Wt/WRegExpValidator>
+#include <Wt/WSuggestionPopup>
 
 #include <Wt/WApplication>
 #include <Wt/WLogger>
@@ -27,7 +29,28 @@ TodoWidget::TodoWidget(WContainerWidget *parent,
   todoTitle_ = new WLineEdit(this);
   todoTitle_->setFocus();
   addTodoButton_ = new WPushButton(tr("todo.add"), this);
+  addTodoButton_->setEnabled(false);
+  todoTitle_->textInput().connect(std::bind([=] () {
+    if(todoTitle_->text() == "")
+      addTodoButton_->setEnabled(false);
+    else
+      addTodoButton_->setEnabled(true);
+  }));
   addTodoButton_->clicked().connect(this, &TodoWidget::clickTodo);
+
+  WSuggestionPopup::Options suggestionOptions;
+  suggestionOptions.highlightBeginTag = "<span class=\"highlight\">";
+  suggestionOptions.highlightEndTag = "</span>";
+  suggestionOptions.listSeparator = ',';
+  suggestionOptions.whitespace = " \\n";
+  suggestionOptions.wordSeparators = "-., \"@\\n;";
+  suggestionOptions.appendReplacedText = ", ";
+  todoSuggestion_ = new WSuggestionPopup(
+      WSuggestionPopup::generateMatcherJS(suggestionOptions),
+	    WSuggestionPopup::generateReplacerJS(suggestionOptions),
+	    this);
+  todoSuggestion_->forEdit(todoTitle_);
+
   mailLineEdit_ = new WLineEdit(this);
 
   dbo::Session &session = ToDoApp::toDoApp()->session;
@@ -35,9 +58,22 @@ TodoWidget::TodoWidget(WContainerWidget *parent,
 
   mailLineEdit_->setText(user_->mail.toUTF8());
 
+  mailInfo_ = new Wt::WText("",this);
+  mailInfo_->setInline(false);
+  mailInfo_->hide();
+
   transaction.commit();
 
   saveMailButton_ = new WPushButton(tr("todo.save_mail"), this);
+  saveMailButton_->setEnabled(false);
+  WRegExpValidator *validator = new WRegExpValidator("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}");
+  mailLineEdit_->setValidator(validator);
+  mailLineEdit_->textInput().connect(std::bind([=] () {
+    if(mailLineEdit_->text() == "")
+      saveMailButton_->setEnabled(false);
+    else
+      saveMailButton_->setEnabled(true);
+  }));
   saveMailButton_->clicked().connect(this, &TodoWidget::saveMail);
   sortBoxText_ = new WText("<br/>Sort by ", this);
   sortCBox_ = new WComboBox(this);
@@ -61,6 +97,8 @@ void TodoWidget::drawTable(std::string sortBy)
   todoTable_->elementAt(0, 3)->addWidget(new Wt::WText(tr("todo.done")));
   todoTable_->elementAt(0, 4)->addWidget(new Wt::WText(tr("todo.notification")));
 
+  todoSuggestion_->clearSuggestions();
+
   dbo::Session &session = ToDoApp::toDoApp()->session;
   dbo::Transaction transaction(session);
 
@@ -81,6 +119,8 @@ void TodoWidget::drawTable(std::string sortBy)
     dbo::ptr<Todo> todo = *i;
     todoTable_->elementAt(row, 0)->addWidget(new Wt::WText(Wt::WString::fromUTF8("{1}").arg(row)));
     todoTable_->elementAt(row, 1)->addWidget(new Wt::WText((*i)->title.toUTF8()));
+
+    todoSuggestion_->addSuggestion((*i)->title.toUTF8());
 
     datePickers[row-1] = new Wt::WDateEdit();
     todoTable_->elementAt(row, 2)->addWidget(datePickers[row-1]);
@@ -154,12 +194,21 @@ void TodoWidget::clickTodo()
 
 void TodoWidget::saveMail()
 {
-  dbo::Session &session = ToDoApp::toDoApp()->session;
-  dbo::Transaction transaction(session);
+  mailInfo_->show();
 
-  user_.modify()->mail = mailLineEdit_->text().toUTF8();
+  if (mailLineEdit_->validate() == Wt::WValidator::Valid) {
+    dbo::Session &session = ToDoApp::toDoApp()->session;
+    dbo::Transaction transaction(session);
 
-  transaction.commit();
+    user_.modify()->mail = mailLineEdit_->text().toUTF8();
+
+    transaction.commit();
+    mailInfo_->setText("Mail saved successfully!");
+  	mailInfo_->setStyleClass("alert alert-success");
+  } else {
+    mailInfo_->setText("Incorrect mail address format!");
+   	mailInfo_->setStyleClass("alert alert-danger");
+  }
 }
 
 void TodoWidget::sendNotification(std::string email, Wt::WString todoTitle)
