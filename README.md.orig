@@ -17,13 +17,17 @@ Make sure you have Wt libraries installed. In case you don't:
 
 `$ sudo apt-get install witty witty-dev witty-doc witty-dbg witty-examples`
 
+<<<<<<< 827a5316ebd14766768d3d0d36027d9d00ec0124
 Make sure you have port 25 open (for SMTP communication), if:
 
 `$ telnet localhost 25` throws some restrictions, then install postfix:
 
 `$ sudo apt-get install mailutils`
 
+Run 
+=======
 Run
+>>>>>>> some validators and autocomplete
 `$ ./build.sh`
 Wait for it to compile and visit localhost:8080
 
