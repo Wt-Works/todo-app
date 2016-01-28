@@ -111,6 +111,7 @@ void TodoWidget::drawTable(std::string sortBy)
   Wt::WDateEdit **datePickers = new Wt::WDateEdit*[todos.size()];
   Wt::WCheckBox **doneCheckBox = new Wt::WCheckBox*[todos.size()];
   Wt::WCheckBox **notificationCheckBox = new Wt::WCheckBox*[todos.size()];
+  Wt::WPushButton **deleteButton = new Wt::WPushButton*[todos.size()];
 
   int row = 1;
 
@@ -169,6 +170,19 @@ void TodoWidget::drawTable(std::string sortBy)
       notificationCheckBox[row-1]->setEnabled(false);
     }));
     notificationCheckBox[row-1]->checked().connect(boost::bind(&TodoWidget::sendNotification, this, user_->mail.toUTF8(), todo->title));
+
+    deleteButton[row-1] = new Wt::WPushButton("delete");
+    todoTable_->elementAt(row, 5)->addWidget(deleteButton[row-1]);
+    deleteButton[row-1]->clicked().connect(std::bind([=] () {
+      dbo::Session &session = ToDoApp::toDoApp()->session;
+      dbo::Transaction transaction(session);
+      dbo::ptr<Todo> todo_rm = todo;
+      todo_rm.remove();
+      transaction.commit();
+      todoTable_->clear();
+      TodoWidget::drawTable();
+    }));
+
 
     row++;
   }
