@@ -1,33 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <messages>
-  <message id="login.userName">
-    User name
-  </message>
-  <message id="login.loginButton">
-    Login
-  </message>
-
-  <message id="todo.add">
-    Add todo
-  </message>
-  <message id="todo.num">
-    #
-  </message>
-  <message id="todo.title">
-    Title
-  </message>
-  <message id="todo.deadline">
-    Deadline
-  </message>
-  <message id="todo.done">
-    Done
-  </message>
-  <message id="todo.save_mail">
-    Save e-mail
-  </message>
-  <message id="todo.notification">
-    Notification
-  </message>
+  <message id="login.userName">User name</message>
+  <message id="login.loginButton">Login</message>
+  <message id="todo.add">Add todo</message>
+  <message id="todo.num">#</message>
+  <message id="todo.title">Title</message>
+  <message id="todo.deadline">Deadline</message>
+  <message id="todo.done">Done</message>
+  <message id="todo.save_mail">Save e-mail</message>
+  <message id="todo.notification">Notification</message>
 
   <message id="fatalerror.title">
     Fatal error
